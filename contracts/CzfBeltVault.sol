@@ -51,8 +51,6 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     // 3) Mints _wad of CzfBeltVault to _for
     //NOTE: This contract must be approved for beltBNB first.
     function deposit(address _for, uint _wad) external nonReentrant {
-        beltBNB.approve(address(this), _wad);
-
         _safeTransferFrom(beltBNB, msg.sender, address(this), _wad);
         beltFarm.deposit(BELT_POOL_ID, _wad);
 
@@ -65,9 +63,7 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     //2) Unstakes _wad beltBnb from beltFarm
     //3) Transfers _wad beltBNB from self to _for.
     //NOTE: This contract must be approved for CzfBeltVault first.
-    function withdraw(address _for, uint _wad) external nonReentrant {
-        beltBNB.approve(address(this), _wad);
-
+    function withdraw(address _for, uint _wad) external {
         _burn(_for, _wad);
 
         beltFarm.withdraw(BELT_POOL_ID, _wad);
