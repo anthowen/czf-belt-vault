@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "compile": "npx hardhat compile",
-    "deploy:testnet": "npx hardhat run --network testnet scripts/deploy.js"
+    "deploy:testnet": "npx hardhat run --network bsctest scripts/deploy.js"
   },
   "keywords": [],
   "author": "",
