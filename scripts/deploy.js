@@ -4,6 +4,7 @@
 // When running the script with `npx hardhat run <script>` you'll find the Hardhat
 // Runtime Environment's members available in the global scope.
 const hre = require("hardhat");
+const { beltBNB, beltPoolId, beltFarm, BELT } = require("../deployConfig.json");
 
 async function main() {
   // Hardhat always runs the compile task when running scripts with its command
@@ -12,11 +13,6 @@ async function main() {
   // If this script is run directly using `node` you may want to call compile
   // manually to make sure everything is compiled
   // await hre.run('compile');
-
-  const beltFarm = "0xD4BbC80b9B102b77B21A06cb77E954049605E6c1";
-  const beltBNB = "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C";
-  const beltPoolId = 6;
-
   
   // We get the contract to deploy
   const CzfBeltVault = await hre.ethers.getContractFactory("CzfBeltVault");
