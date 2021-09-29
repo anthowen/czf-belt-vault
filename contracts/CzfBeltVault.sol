@@ -23,8 +23,6 @@ interface IBeltFarm {
     function deposit(uint256 _pid, uint256 _wantAmt) external;
 
     function withdraw(uint256 _pid, uint256 _wantAmt) external;
-
-    function withdrawAll(uint256 _pid) external;
 }
 
 
@@ -32,17 +30,22 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     // address private beltFarm = 0xD4BbC80b9B102b77B21A06cb77E954049605E6c1;
     // address private beltBNB = 0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C;
 
+    address private constant BELT = 0xE0e514c71282b6f4e823703a39374Cf58dc3eA4f;
+
     IBeltFarm public beltFarm;
     IERC20 public beltBNB;
-
-    uint256 private constant BELT_POOL_ID = 6;
+    IERC20 public belt;
+    
+    uint256 private beltPoolId;
 
     event Deposit(address _for, uint256 _pid, uint256 _amt);
     event Withdraw(address _for, uint256 _pid, uint256 _amt);
 
-    constructor(address _beltFarm, address _beltBNB) ERC20("CzfBeltVault", "CzfBeltVault") {
+    constructor(address _beltFarm, address _beltBNB, uint256 _beltPoolId) ERC20("CzfBeltVault", "CzfBeltVault") {
         beltFarm = IBeltFarm(_beltFarm);
         beltBNB = IERC20(_beltBNB);
+        belt = IERC20(BELT);
+        beltPoolId = _beltPoolId;
     }
 
     
@@ -52,11 +55,11 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     //NOTE: This contract must be approved for beltBNB first.
     function deposit(address _for, uint _wad) external nonReentrant {
         _safeTransferFrom(beltBNB, msg.sender, address(this), _wad);
-        beltFarm.deposit(BELT_POOL_ID, _wad);
+        beltFarm.deposit(beltPoolId, _wad);
 
         _mint(_for, _wad);
 
-        emit Deposit(msg.sender, BELT_POOL_ID, _wad);
+        emit Deposit(msg.sender, beltPoolId, _wad);
     }
 
     //1) Burns _wad CzfBeltVault from msg.sender.
@@ -66,19 +69,19 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     function withdraw(address _for, uint _wad) external {
         _burn(_for, _wad);
 
-        beltFarm.withdraw(BELT_POOL_ID, _wad);
+        beltFarm.withdraw(beltPoolId, _wad);
         beltBNB.transfer(_for, _wad);
 
-        emit Withdraw(msg.sender, BELT_POOL_ID, _wad);
+        emit Withdraw(msg.sender, beltPoolId, _wad);
     }
 
     //1) Harvests BELT from beltFarm.
     //2) Transfers all BELT in this contract to _pool
     //NOTE: This can only be called by owner.
     function harvest(address _pool) external onlyOwner {
-        beltFarm.withdrawAll(BELT_POOL_ID);
+        beltFarm.withdraw(beltPoolId, 0);
 
-        beltBNB.transfer(_pool, beltBNB.balanceOf(address(this)));
+        belt.transfer(_pool, belt.balanceOf(address(this)));
     }
 
     function _safeTransferFrom(

@@ -15,11 +15,12 @@ async function main() {
 
   const beltFarm = "0xD4BbC80b9B102b77B21A06cb77E954049605E6c1";
   const beltBNB = "0xa8Bb71facdd46445644C277F9499Dd22f6F0A30C";
+  const beltPoolId = 6;
 
   
   // We get the contract to deploy
   const CzfBeltVault = await hre.ethers.getContractFactory("CzfBeltVault");
-  const czfBeltVault = await CzfBeltVault.deploy(beltFarm, beltBNB);
+  const czfBeltVault = await CzfBeltVault.deploy(beltFarm, beltBNB, beltPoolId);
 
   await czfBeltVault.deployed();
 
