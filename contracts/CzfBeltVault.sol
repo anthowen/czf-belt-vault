@@ -1,4 +1,4 @@
-//SPDX-License-Identifier: Unlicense
+//SPDX-License-Identifier: GPL-3.0
 pragma solidity ^0.8.0;
 
 import "hardhat/console.sol";
@@ -49,8 +49,8 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     }
 
     
-    // 1) Stakes _wad beltBnb to beltFarm
-    // 2) Transfers _wad beltBnb from msg.sender
+    // 1) Transfers _wad beltBnb from msg.sender
+    // 2) Stakes _wad beltBnb to beltFarm
     // 3) Mints _wad of CzfBeltVault to _for
     //NOTE: This contract must be approved for beltBNB first.
     function deposit(address _for, uint _wad) external nonReentrant {
@@ -67,7 +67,7 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     //3) Transfers _wad beltBNB from self to _for.
     //NOTE: This contract must be approved for CzfBeltVault first.
     function withdraw(address _for, uint _wad) external {
-        _burn(_for, _wad);
+        _burn(msg.sender, _wad);
 
         beltFarm.withdraw(beltPoolId, _wad);
         beltBNB.transfer(_for, _wad);
