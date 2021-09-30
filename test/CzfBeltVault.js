@@ -44,33 +44,36 @@ describe("CzfBeltVault", function () {
       // That will get you the beltBNB BEP20 tokens you need for the tests - then its just a matter of using .balanceOf to check the beltBNB and BELT balances. You should also carefully consider edge cases (people sending invalid values, 0 values, calling from accounts that dont hold any tokens) and check that the contract behaves correct and reverts.
 
 
-      const amount = parseEther("1.0");
-      const depositAmount = amount.div(2);
-
-      const connected = beltBNBContract.connect(traderAddress);
-      await connected.depositBNB(0, {
-        value: parseEther("0.05")
+      const bnbAmount = parseEther("1.0");
+      
+      await beltBNBContract.connect(traderAddress).depositBNB(0, {
+        value: bnbAmount
       });
 
-      expect(depositAmount).to.equal(parseEther("0.5"))
 
-      console.log('beltBnb', await beltBNBContract.balanceOf(traderAddress.address));
+      const beltBNBBalance = await beltBNBContract.balanceOf(traderAddress.address);
+      const depositAmount = beltBNBBalance.div(2);
+      console.log('beltBnb depositAmount', formatEther(beltBNBBalance), formatEther(depositAmount));
 
-      // const depositCall = await czfBeltVault.connect(traderAddress).deposit(transferAddress1.address, depositAmount);
+      await beltBNBContract.connect(traderAddress).approve(czfBeltVault.address, beltBNBBalance);
 
-      // expect(depositCall)
-      // .to.emit(czfBeltVault, "Deposit")
-      // .withArgs(transferAddress1.address, beltPoolId, depositAmount);
+      console.log('allowance', await beltBNBContract.allowance(traderAddress.address, czfBeltVault.address));
+      
+      const depositCall = await czfBeltVault.connect(traderAddress).deposit(traderAddress.address, depositAmount);
 
-      // const czfBeltVaultBalance = await czfBeltVault.balanceOf(
-      //   transferAddress1
-      // );
+      expect(depositCall)
+      .to.emit(czfBeltVault, "Deposit")
+      .withArgs(traderAddress.address, beltPoolId, depositAmount);
 
-      // expect(czfBeltVaultBalance).to.eq(depositAmount, "The correct amount of CzfBeltVault is deposited");
+      const czfBeltVaultBalance = await czfBeltVault.balanceOf(
+        traderAddress.address
+      );
 
-      // const beltBNBBalance = await beltBNBContract.balanceOf(transferAddress1);
+      expect(czfBeltVaultBalance).to.eq(depositAmount, "The correct amount of CzfBeltVault is deposited");
 
-      // console.log({ beltBNBBalance });
+      const beltBNBBalanceAfter = await beltBNBContract.balanceOf(traderAddress.address);
+
+      console.log({ beltBNBBalanceAfter });
 
       // expect(czfBeltVaultBalance).to.eq(amount);
 
