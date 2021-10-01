@@ -20,7 +20,6 @@ task("accounts", "Prints the list of accounts", async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-  defaultNetwork: "mainnet",
   networks: {
     localhost: {
       url: "http://127.0.0.1:8545",
@@ -44,6 +43,9 @@ module.exports = {
       accounts: { mnemonic: mnemonic },
     },
   },
+  mocha: {
+    timeout: 1000000,
+  },
   etherscan: {
     apiKey: bscscanApiKey,
   },
@@ -52,6 +54,7 @@ module.exports = {
     settings: {
       optimizer: {
         enabled: true,
+        runs: 200,
       },
     },
   },
@@ -60,8 +63,5 @@ module.exports = {
     tests: "./test",
     cache: "./cache",
     artifacts: "./artifacts",
-  },
-  mocha: {
-    timeout: 20000,
   },
 };
