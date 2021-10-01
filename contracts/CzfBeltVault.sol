@@ -88,8 +88,6 @@ contract CzfBeltVault is ERC20, Ownable, ReentrancyGuard {
     function harvest(address _pool) external onlyOwner {
         beltFarm.withdraw(beltPoolId, 0);
 
-        console.log("belt balance", belt.balanceOf(address(this)));
-
         belt.transfer(_pool, belt.balanceOf(address(this)));
     }
 

@@ -11,7 +11,7 @@ const { time } = require("@openzeppelin/test-helpers");
 const { beltBNB, beltPoolId, beltFarm, BELT } = require("../deployConfig.json");
 
 const { expect } = chai;
-const { parseEther, formatEther } = ethers.utils;
+const { parseEther, formatEther, parseUnits } = ethers.utils;
 
 describe("CzfBeltVault", function () {
   let czfBeltVault;
@@ -119,11 +119,11 @@ describe("CzfBeltVault", function () {
     it("Should harvest the correct amount of BELT", async function () {
       await depositToCzfBeltVault(trader3, parseEther("1"), 3);
 
-      const expectedBELT = "49336184774";
+      const expectedBELT = parseUnits("49336184774", "wei");
 
       await czfBeltVault.connect(owner).harvest(trader3.address);
 
-      expect(formatEther(await beltContract.balanceOf(trader3.address))).to.eq(
+      expect(await beltContract.balanceOf(trader3.address)).to.eq(
         expectedBELT,
         "The amount of BELT is correct"
       );
